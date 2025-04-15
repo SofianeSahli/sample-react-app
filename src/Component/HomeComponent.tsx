@@ -1,36 +1,23 @@
 import { useQuery } from "@apollo/client";
 import { useNavigate } from "react-router";
-import connectionTestQuery from "../Graphs/Queries/Samples";
+import * as queries from "../Graphs/Queries/Samples";
+import { Link } from "react-router-dom";
+
+const primaryButtonStyle: React.CSSProperties = {
+  borderRadius: "10px",
+  boxShadow: "0 2px gray",
+  backgroundColor: "lightblue",
+  color: "black",
+  margin: "4px 2px"
+}
 export function Home() {
   const navigate = useNavigate();
-  const categories = [
-    {
-      id: 1,
-      title: "Clothing",
-    },
-    {
-      id: 2,
-      title: "Groceries",
-    },
-    {
-      id: 3,
-      title: "Fast food",
-    },
-    {
-      id: 4,
-      title: "Restaurant",
-    },
-    {
-      id: 5,
-      title: "Tools",
-    },
-  ];
-  const queryResult = useQuery(connectionTestQuery);
-  console.log(queryResult);
-  const categoriesClicked = (category: String) => {
-    alert(category);
-    navigate("/search/" + category);
-  };
+
+  const categoriesQuery = useQuery(queries.fetchCategories);
+  // const categoriesClicked = (category: String) => {
+  //   alert(category);
+  //   navigate("/search/" + category);
+  // };
   return (
     <div>
       <h1> Welcome to the mall online</h1>
@@ -38,17 +25,25 @@ export function Home() {
         In here you can find various shop, artisans and restaurant nearby you.
         Select what you're looking for to get started{" "}
       </h2>
-      <div className="grid grid-cols-1">
-        {categories.map((element) => (
-          <button
-            key={element.id}
-            onClick={() => categoriesClicked(element.title)}
-            className="rounded-full"
-          >
-            {element.title}
-          </button>
-        ))}
-      </div>
+      {
+        categoriesQuery.loading && !categoriesQuery.error ? <h1> Loading.... </h1> :
+          <div className="grid grid-cols-4 primary-button-style" >
+            {categoriesQuery.data.categories.map((element: any) => {
+              return (<Link
+                to={{ pathname: "/search/" + element.name }} state={{
+                  category_id: element.id
+                }}
+                style={primaryButtonStyle}
+                key={element.id}
+                className="rounded-full"
+              >
+                {element.name}
+              </Link>)
+            }
+            )}
+          </div>
+      }
+
     </div>
   );
 }

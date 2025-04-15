@@ -1,8 +1,25 @@
 import { gql } from "@apollo/client";
 
-const connectionTestQuery = gql`
+const fetchCategories = gql`
   query {
-    echo(message: "Ah ouais")
+     categories { 
+     id 
+     name
+     }
   }
 `;
-export default connectionTestQuery;
+
+const fetShopsByCategoryId = gql`
+query shopsByCategoryId($id : Int! ){ 
+shopsByCategoryId(id : $id) {
+  name 
+  id 
+}
+}
+`
+const insertShop = gql`
+  mutation SubmitForm($name: String!, $phone: String!, $email: String!) {
+    submitForm(name: $name, phone: $phone, email: $email)
+  }
+`;
+export { fetchCategories, fetShopsByCategoryId ,insertShop};
